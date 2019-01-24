@@ -1,0 +1,4 @@
+﻿1>------ Build started: Project: A01, Configuration: Debug Win32 ------
+1>A01.cpp
+1>A01.vcxproj -> D:\Github\DSA2\A01\Debug\A01.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
