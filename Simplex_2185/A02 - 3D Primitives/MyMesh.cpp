@@ -276,7 +276,28 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//Starting values
+	float angleInterval = 360 / a_nSubdivisions;
+	vector3 centerVec = vector3(0.0f, 0.0f, 0.0f);
+	vector3 leftVec;
+	vector3 rightVec = vector3(a_fRadius, 0, 0);
+	vector3 neutralVec = vector3(a_fRadius, 0, 0);
+	vector3 heightVec = vector3(0, 0, a_fHeight);
+
+	//Loop through creating a triangle for each subdivision and draw the left and right points to the height point the opposite way
+	for (size_t i = 0; i < a_nSubdivisions; i++) {
+		float angleVec = i * angleInterval;
+		leftVec = rightVec;
+		rightVec = vector3((a_fRadius * (std::cos((angleVec * PI) / 180))), (a_fRadius * (std::sin((angleVec * PI) / 180))), 0);
+		AddTri(centerVec, leftVec, rightVec);
+		//draw from the left right vecotors to the height
+		AddTri(heightVec, rightVec, leftVec);
+	}
+
+	//Fill in final section
+	AddTri(centerVec, rightVec, neutralVec);
+	AddTri(heightVec, neutralVec, rightVec);
+
 	// -------------------------------
 
 	// Adding information about color
@@ -300,7 +321,40 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//Starting values
+	float angleInterval = 360 / a_nSubdivisions;
+	vector3 centerVec = vector3(0.0f, 0.0f, 0.0f);
+	vector3 leftVec;
+	vector3 rightVec = vector3(a_fRadius, 0, 0);
+	vector3 neutralVec = vector3(a_fRadius, 0, 0);
+	vector3 heightVec = vector3(0, 0, a_fHeight);
+	vector3 rightHeightVec = vector3(a_fRadius, 0, a_fHeight);
+	vector3 neutralHeightVec = vector3(a_fRadius, 0, a_fHeight);
+	vector3 leftHeightVec;
+
+	//Draw the plane around the center point and the height point
+	for (size_t i = 0; i < a_nSubdivisions; i++) {
+		float angleVec = i * angleInterval;
+		
+		//Around center point
+		leftVec = rightVec;
+		rightVec = vector3((a_fRadius * (std::cos((angleVec * PI) / 180))), (a_fRadius * (std::sin((angleVec * PI) / 180))), 0);
+		AddTri(centerVec, rightVec, leftVec);
+
+		//Around height point
+		leftHeightVec = rightHeightVec;
+		rightHeightVec = vector3((a_fRadius * (std::cos((angleVec * PI) / 180))), (a_fRadius * (std::sin((angleVec * PI) / 180))), a_fHeight);
+		AddTri(heightVec, leftHeightVec, rightHeightVec); //reversed
+
+		//draw quad between the edges
+		AddQuad(leftVec, rightVec, leftHeightVec, rightHeightVec);
+	}
+
+	//Add final section  Do opposite draws to keep em both on the same side
+	AddTri(centerVec, neutralVec, rightVec);
+	AddTri(heightVec, rightHeightVec, neutralHeightVec); //reversed
+	AddQuad(rightVec, neutralVec, rightHeightVec, neutralHeightVec); //reversed
+
 	// -------------------------------
 
 	// Adding information about color
@@ -330,7 +384,57 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//Starting Values
+	float angleInterval = 360 / a_nSubdivisions;
+	vector3 centerVec = vector3(0.0f, 0.0f, 0.0f);
+
+	//Inner Radius
+	vector3 innerLeftVec;
+	vector3 innerRightVec = vector3(a_fInnerRadius, 0, 0);
+	vector3 innerNeutralVec = vector3(a_fInnerRadius, 0, 0);
+
+	vector3 innerLeftHeightVec;
+	vector3 innerRightHeightVec = vector3(a_fInnerRadius, 0, a_fHeight);
+	vector3 innerNeutralHeightVec = vector3(a_fInnerRadius, 0, a_fHeight);
+
+	//Outer Radius
+	vector3 outerLeftVec;
+	vector3 outerRightVec = vector3(a_fOuterRadius, 0, 0);
+	vector3 outerNeutralVec = vector3(a_fOuterRadius, 0, 0);
+
+	vector3 outerLeftHeightVec;
+	vector3 outerRightHeightVec = vector3(a_fOuterRadius, 0, a_fHeight);
+	vector3 outerNeutralHeightVec = vector3(a_fOuterRadius, 0, a_fHeight);
+
+	//Loop to draw Tube
+	for (size_t i = 0; i < a_nSubdivisions; i++) {
+		float angleVec = i * angleInterval;
+
+		//Bottom Plane
+		innerLeftVec = innerRightVec;
+		innerRightVec = vector3((a_fInnerRadius * (std::cos((angleVec * PI) / 180))), (a_fInnerRadius * (std::sin((angleVec * PI) / 180))), 0);
+		outerLeftVec = outerRightVec;
+		outerRightVec = vector3((a_fOuterRadius * (std::cos((angleVec * PI) / 180))), (a_fOuterRadius * (std::sin((angleVec * PI) / 180))), 0);
+		AddQuad(innerLeftVec, innerRightVec, outerLeftVec, outerRightVec);
+
+		//Top Plane
+		innerLeftHeightVec = innerRightHeightVec;
+		innerRightHeightVec = vector3((a_fInnerRadius * (std::cos((angleVec * PI) / 180))), (a_fInnerRadius * (std::sin((angleVec * PI) / 180))), a_fHeight);
+		outerLeftHeightVec = outerRightHeightVec;
+		outerRightHeightVec = vector3((a_fOuterRadius * (std::cos((angleVec * PI) / 180))), (a_fOuterRadius * (std::sin((angleVec * PI) / 180))), a_fHeight);
+		AddQuad(innerRightHeightVec, innerLeftHeightVec, outerRightHeightVec, outerLeftHeightVec); //reversed
+
+		//draw walls
+		AddQuad(innerRightVec, innerLeftVec, innerRightHeightVec, innerLeftHeightVec); //inner wall. Reversed
+		AddQuad(outerLeftVec, outerRightVec, outerLeftHeightVec, outerRightHeightVec); //Outer Wall
+	}
+
+	//Fill in final subdivision
+	AddQuad(innerRightVec, innerNeutralVec, outerRightVec, outerNeutralVec); //bottom plane
+	AddQuad(innerNeutralHeightVec, innerRightHeightVec, outerNeutralHeightVec, outerRightHeightVec); //top plane reversed
+	AddQuad(innerNeutralVec, innerRightVec, innerNeutralHeightVec, innerRightHeightVec); //inner wall reversed
+	AddQuad(outerRightVec, outerNeutralVec, outerRightHeightVec, outerNeutralHeightVec); //outer wall
+
 	// -------------------------------
 
 	// Adding information about color

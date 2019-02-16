@@ -1,43 +1,4 @@
 #include "MyMesh.h"
-void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
-{
-	Release();
-	Init();
-
-	if (a_fRadius < 0.01f)
-		a_fRadius = 0.01f;
-
-	if (a_nSubdivisions < 3)
-		a_nSubdivisions = 3;
-	if (a_nSubdivisions > 360)
-		a_nSubdivisions = 360;
-
-	/*
-		Calculate a_nSubdivisions number of points around a center point in a radial manner
-		then call the AddTri function to generate a_nSubdivision number of faces
-	*/
-	float angleInterval = 360 / a_nSubdivisions;
-	vector3 centerVec = vector3(0.0f, 0.0f, 0.0f);
-	vector3 leftVec;
-	vector3 rightVec = vector3(a_fRadius, 0, 0);
-	vector3 neutralVec = vector3(a_fRadius, 0, 0);
-
-	//Loop through creating a triangle for each subdivision and drawing them
-	//Using <= causes the final one to overshoot slightly
-	for (int i = 0; i < a_nSubdivisions; i++) {
-		float angleVec = i * angleInterval;
-		leftVec = rightVec;
-		rightVec = vector3((a_fRadius * (std::cos((angleVec * PI) / 180))), (a_fRadius * (std::sin((angleVec * PI) / 180))), 0);
-		AddTri(centerVec, leftVec, rightVec);
-	}
-
-	//fill in final space, brings back to original point. 
-	AddTri(centerVec, rightVec, neutralVec);
-
-	// Adding information about color
-	CompleteMesh(a_v3Color);
-	CompileOpenGL3X();
-}
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -298,7 +259,6 @@ void MyMesh::GenerateCuboid(vector3 a_v3Dimensions, vector3 a_v3Color)
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
-
 void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions, vector3 a_v3Color)
 {
 	if (a_fRadius < 0.01f)

@@ -1,6 +1,6 @@
 /*----------------------------------------------
-Programmer: Yash Bagri yxb1236@rit.edu
-Date: 2/16/2019
+Programmer: Alberto Bobadilla (labigm@gmail.com)
+Date: 2017/05
 ----------------------------------------------*/
 #ifndef __MAIN_H_
 #define __MAIN_H_
