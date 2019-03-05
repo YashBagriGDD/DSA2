@@ -18,7 +18,12 @@ class Application
 {
 	MyCamera* m_pCamera = nullptr; //Camera class
 	MyMeshManager* m_pMyMeshMngr = nullptr; //My Mesh Manager
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //Programmer
+	String m_sProgrammer = "Yash Bagri - yxb1236@rit.edu"; //Programmer
+
+	//Pitch and Yaw values for camera rotation
+	float pitch = 0;
+	float yaw = 0;
+
 private:
 	static ImGuiObject gui; //GUI object
 

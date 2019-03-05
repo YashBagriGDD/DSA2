@@ -15,6 +15,12 @@ class MyCamera
 	vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
 	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
 	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera
+	
+	
+	vector3 m_v3Direction = glm::normalize(m_v3Position - m_v3Target); //Opposite direction of where the camera is facing
+	vector3 m_v3XAxis = glm::normalize(glm::cross(m_v3Above, m_v3Direction)); // X-axis of the camera. Right
+	vector3 m_v3YAxis = glm::cross(m_v3Direction, m_v3XAxis); // Y-axis of the camera. Up
+
 
 	bool m_bPerspective = true; //perspective view? False is Orthographic
 
@@ -29,6 +35,8 @@ class MyCamera
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
 public:
+	vector3 m_v3Front = vector3(0.0f, 0.0f, -1.0f); // front of the camera
+
 	/*
 	USAGE: Constructor
 	ARGUMENTS: ---

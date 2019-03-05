@@ -491,7 +491,27 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//Starting values
+	float angleInterval = 360 / a_nSubdivisions;
+	vector3 centerVec = vector3(0.0f, 0.0f, -a_fRadius);
+	vector3 leftVec;
+	vector3 rightVec = vector3(a_fRadius, 0, 0);
+	vector3 neutralVec = vector3(a_fRadius, 0, 0);
+	vector3 heightVec = vector3(0, 0, a_fRadius);
+
+	//Loop through creating a triangle for each subdivision and draw the left and right points to the height point the opposite way
+	for (size_t i = 0; i < a_nSubdivisions; i++) {
+		float angleVec = i * angleInterval;
+		leftVec = rightVec;
+		rightVec = vector3((a_fRadius * (std::cos((angleVec * PI) / 180))), (a_fRadius * (std::sin((angleVec * PI) / 180))), 0);
+		AddTri(centerVec, leftVec, rightVec);
+		//draw from the left right vecotors to the height
+		AddTri(heightVec, rightVec, leftVec);
+	}
+
+	//Fill in final section
+	AddTri(centerVec, rightVec, neutralVec);
+	AddTri(heightVec, neutralVec, rightVec);
 	// -------------------------------
 
 	// Adding information about color
