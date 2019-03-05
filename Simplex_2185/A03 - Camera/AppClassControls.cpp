@@ -387,6 +387,8 @@ void Application::CameraRotation(float a_fSpeed)
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	m_pCamera->m_v3Front = glm::normalize(front);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
+
+	//Current "bugs" camera is inverted and a little slow.
 }
 //Keyboard
 void Application::ProcessKeyboard(void)

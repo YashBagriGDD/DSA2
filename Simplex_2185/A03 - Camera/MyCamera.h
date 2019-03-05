@@ -1,5 +1,5 @@
 /*----------------------------------------------
-Programmer: Alberto Bobadilla (labigm@gmail.com)
+Programmer: Yash Bagri (yxb1236@rit.edu)
 Date: 2018/09
 ----------------------------------------------*/
 #ifndef __MYCAMERACLASS_H_
