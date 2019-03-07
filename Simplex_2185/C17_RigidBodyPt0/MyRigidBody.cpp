@@ -13,7 +13,17 @@ vector3 MyRigidBody::GetMinGlobal(void) { return m_v3MinG; }
 vector3 MyRigidBody::GetMaxGlobal(void) { return m_v3MaxG; }
 vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }
 matrix4 MyRigidBody::GetModelMatrix(void) { return m_m4ToWorld; }
-void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix) { m_m4ToWorld = a_m4ModelMatrix; }
+void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix) {
+	m_m4ToWorld = a_m4ModelMatrix;
+
+	//1.0f in the vector4 since it applies to position. 0.0f applies to direction
+	//Make the center a global value to move when the object is moved
+	m_v3CenterG = static_cast<vector3>(m_m4ToWorld * vector4(m_v3Center, 1.0f));
+
+	//Wrong, figure it out for the exercise
+	m_v3MaxG = static_cast<vector3>(m_m4ToWorld * vector4(m_v3MaxL, 1.0f));
+	m_v3MinG = static_cast<vector3>(m_m4ToWorld * vector4(m_v3MinG, 1.0f));
+}
 //Allocation
 void MyRigidBody::Init(void)
 {
@@ -63,6 +73,49 @@ void MyRigidBody::Release(void)
 MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 {
 	Init();
+	uint uPointCount = a_pointList.size();
+	if (uPointCount < 3)
+		return; //return out if too small
+
+
+	//Calculate center of the body
+	m_v3MinL = m_v3MaxL = a_pointList[0];
+	for (uint i = 1; i < uPointCount; ++i) //skip first vector since its already assigned
+	{
+		//If minimum is greater than the compared point. Make point the new minimum
+		if (m_v3MinL.x > a_pointList[i].x)
+			m_v3MinL.x = a_pointList[i].x;
+
+		//If minimum is less than the compared point Make the point the new Maximum
+		else if (m_v3MaxL.x < a_pointList[i].x)
+			m_v3MaxL.x = a_pointList[i].x;
+
+		if (m_v3MinL.y > a_pointList[i].y)
+			m_v3MinL.y = a_pointList[i].y;
+		else if (m_v3MaxL.y < a_pointList[i].y)
+			m_v3MaxL.y = a_pointList[i].y;
+
+		if (m_v3MinL.z > a_pointList[i].z)
+			m_v3MinL.z = a_pointList[i].z;
+		else if (m_v3MaxL.z < a_pointList[i].z)
+			m_v3MaxL.z = a_pointList[i].z;
+	}
+
+	//Set local to global
+	m_v3MinG = m_v3MinL;
+	m_v3MaxG = m_v3MaxL;
+
+	m_v3Center = (m_v3MaxL + m_v3MinL) / 2.0f;
+	m_v3HalfWidth = (m_v3MaxL - m_v3MinL) / 2.0f;
+
+	//Calculate the furthest away point from the center
+	//Go through every point, calculate distance from center. If its bigger store it as the new radius	
+	for (uint i = 0; i < uPointCount; ++i)
+	{
+		float fDistance = glm::distance(m_v3Center, a_pointList[i]);
+		if (glm::distance(m_v3Center, a_pointList[i]) > m_fRadius)
+			m_fRadius = fDistance;
+	}
 }
 MyRigidBody::MyRigidBody(MyRigidBody const& other)
 {
@@ -102,8 +155,32 @@ void MyRigidBody::AddToRenderList(void)
 {
 	if (!m_bVisible)
 		return;
+
+	//Working in local allowed the mesh to rotate with the object
+	//m_pMeshMngr->AddWireSphereToRenderList(glm::translate(m_m4ToWorld, m_v3Center) * glm::scale(vector3(m_fRadius)), m_v3Color, RENDER_WIRE);
+	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(m_m4ToWorld, m_v3Center) * glm::scale(vector3(m_v3HalfWidth * 2.0f)), C_BLUE, RENDER_WIRE);
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
-	return false;
+	//bool bIsColliding = false;
+	if (m_v3MaxG.x < other->m_v3MinG.x)
+		return false;
+	if (m_v3MinG.x > other->m_v3MaxG.x)
+		return false;
+
+	if (m_v3MaxG.y < other->m_v3MinG.y)
+		return false;
+	if (m_v3MinG.y > other->m_v3MaxG.y)
+		return false;
+
+	if (m_v3MaxG.z < other->m_v3MinG.z)
+		return false;
+	if (m_v3MinG.z > other->m_v3MaxG.z)
+		return false;
+
+	//Need global space to calculate collisions
+	//if (glm::distance(m_v3CenterG, other->m_v3CenterG) < m_fRadius + other->m_fRadius)
+	//	return true;
+
+	return true;
 }
