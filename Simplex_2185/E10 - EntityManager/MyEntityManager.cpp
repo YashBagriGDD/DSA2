@@ -4,6 +4,8 @@ using namespace Simplex;
 MyEntityManager* MyEntityManager::m_pInstance = nullptr;
 void MyEntityManager::Init(void)
 {
+	m_uEntityCount = 0;
+	m_entityList.clear();
 }
 void MyEntityManager::Release(void)
 {
