@@ -315,6 +315,8 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 		for (int j = 0; j < 3; j++)
 			AbsR[i][j] = glm::abs(R[i][j]) + 0.1f; //epsilon rounds the variable up to a whole number
 
+	//Start testing each axes against each other to see if they're colliding
+	//return 1 if colliding, 0 if not
 	// Test axes L = A0, L = A1, L = A2
 	for (int i = 0; i < 3; i++) {
 		ra = m_v3HalfWidth[i];
