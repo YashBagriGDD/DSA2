@@ -32,7 +32,7 @@ class Application
 	RigidBody* m_pPigRB = nullptr; //Rigid Body of the model
 
 private:
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
+	String m_sProgrammer = "Yash Bagri - yxb1236@rit.edu"; //programmer
 
 	static ImGuiObject gui; //GUI object
 
